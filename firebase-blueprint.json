@@ -1,0 +1,556 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Akun pengguna sistem PJOK SMART BOOK dengan role-based access",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "name": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["ADMIN", "GURU", "SISWA"] },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "avatar": { "type": "string", "maxLength": 512 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "name", "role", "status"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Data profil siswa SMP Negeri 2 Kutasari",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string", "maxLength": 64 },
+        "nisn": { "type": "string", "maxLength": 16, "pattern": "^[0-9]{10}$" },
+        "nis": { "type": "string", "maxLength": 16 },
+        "name": { "type": "string", "maxLength": 128 },
+        "gender": { "type": "string", "enum": ["L", "P"] },
+        "classId": { "type": "string", "maxLength": 32 },
+        "academicYear": { "type": "string", "maxLength": 32 },
+        "email": { "type": "string", "maxLength": 256 },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "xp": { "type": "number" },
+        "avatar": { "type": "string", "maxLength": 512 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["studentId", "nisn", "name", "gender", "classId", "academicYear", "status"]
+    },
+    "Teacher": {
+      "title": "Teacher",
+      "description": "Data profil guru PJOK",
+      "type": "object",
+      "properties": {
+        "teacherId": { "type": "string", "maxLength": 64 },
+        "nip": { "type": "string", "maxLength": 32 },
+        "name": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "assignedClasses": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["teacherId", "nip", "name", "email", "status"]
+    },
+    "Class": {
+      "title": "Class",
+      "description": "Data rombongan belajar kelas VII-A sampai IX-F",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 32 },
+        "name": { "type": "string", "maxLength": 32 },
+        "grade": { "type": "string", "enum": ["VII", "VIII", "IX"] },
+        "totalStudents": { "type": "number" },
+        "homeroomTeacher": { "type": "string", "maxLength": 128 },
+        "academicYear": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "grade", "academicYear"]
+    },
+    "Semester": {
+      "title": "Semester",
+      "description": "Data semester aktif pembelajaran",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 32 },
+        "name": { "type": "string", "enum": ["Semester 1", "Semester 2"] },
+        "academicYear": { "type": "string", "maxLength": 32 },
+        "isActive": { "type": "string", "enum": ["true", "false"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "academicYear"]
+    },
+    "Material": {
+      "title": "Material",
+      "description": "Buku dan materi digital PJOK",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 256 },
+        "category": { "type": "string", "maxLength": 64 },
+        "targetGrade": { "type": "string", "enum": ["VII", "VIII", "IX"] },
+        "chapter": { "type": "number" },
+        "durationMin": { "type": "number" },
+        "readPages": { "type": "number" },
+        "status": { "type": "string", "enum": ["Selesai", "Sedang Belajar", "Belum Mulai"] },
+        "summary": { "type": "string", "maxLength": 2048 },
+        "pdfUrl": { "type": "string", "maxLength": 1024 },
+        "videoUrl": { "type": "string", "maxLength": 1024 },
+        "teacherId": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "category", "targetGrade", "chapter"]
+    },
+    "Video": {
+      "title": "Video",
+      "description": "Koleksi video pembelajaran gerakan dan teknik olahraga",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 256 },
+        "videoUrl": { "type": "string", "maxLength": 1024 },
+        "durationMin": { "type": "number" },
+        "targetGrade": { "type": "string", "enum": ["VII", "VIII", "IX"] },
+        "chapter": { "type": "number" },
+        "description": { "type": "string", "maxLength": 1024 },
+        "teacherId": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "videoUrl", "targetGrade"]
+    },
+    "Quiz": {
+      "title": "Quiz",
+      "description": "Kuis dan uji pemahaman materi PJOK",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 256 },
+        "topic": { "type": "string", "maxLength": 128 },
+        "questionsCount": { "type": "number" },
+        "durationMinutes": { "type": "number" },
+        "dueDate": { "type": "string", "maxLength": 32 },
+        "targetGrade": { "type": "string", "enum": ["VII", "VIII", "IX"] },
+        "classId": { "type": "string", "maxLength": 32 },
+        "teacherId": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "topic", "questionsCount", "durationMinutes"]
+    },
+    "Question": {
+      "title": "Question",
+      "description": "Butir pertanyaan dalam kuis",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "quizId": { "type": "string", "maxLength": 64 },
+        "questionText": { "type": "string", "maxLength": 1024 },
+        "correctAnswerIndex": { "type": "number" },
+        "points": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "quizId", "questionText", "correctAnswerIndex"]
+    },
+    "QuizResult": {
+      "title": "QuizResult",
+      "description": "Hasil pengerjaan kuis siswa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "quizId": { "type": "string", "maxLength": 64 },
+        "studentId": { "type": "string", "maxLength": 64 },
+        "score": { "type": "number" },
+        "completedAt": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["Selesai", "Sedang Dikerjakan"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "quizId", "studentId", "score", "status"]
+    },
+    "CompetencyTest": {
+      "title": "CompetencyTest",
+      "description": "Uji kompetensi berbasis tautan CBT / Google Forms",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 256 },
+        "topic": { "type": "string", "maxLength": 128 },
+        "cbtLink": { "type": "string", "maxLength": 1024 },
+        "deadline": { "type": "string", "maxLength": 64 },
+        "targetGrade": { "type": "string", "enum": ["VII", "VIII", "IX"] },
+        "status": { "type": "string", "enum": ["Buka", "Mendatang", "Selesai"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "topic", "cbtLink", "deadline", "status"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Catatan presensi kehadiran pertemuan PJOK",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "studentId": { "type": "string", "maxLength": 64 },
+        "classId": { "type": "string", "maxLength": 32 },
+        "meetingNo": { "type": "number" },
+        "date": { "type": "string", "maxLength": 32 },
+        "topic": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["Hadir", "Sakit", "Izin", "Alpa"] },
+        "recordedBy": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "classId", "meetingNo", "date", "status"]
+    },
+    "AttitudeAssessment": {
+      "title": "AttitudeAssessment",
+      "description": "Penilaian sikap spiritual dan sosial siswa pada pembelajaran PJOK",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "studentId": { "type": "string", "maxLength": 64 },
+        "classId": { "type": "string", "maxLength": 32 },
+        "date": { "type": "string", "maxLength": 32 },
+        "aspect": { "type": "string", "maxLength": 128 },
+        "rating": { "type": "string", "enum": ["Sangat Baik", "Baik", "Cukup"] },
+        "notes": { "type": "string", "maxLength": 512 },
+        "teacherId": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "classId", "aspect", "rating"]
+    },
+    "Grade": {
+      "title": "Grade",
+      "description": "Daftar nilai pengetahuan, keterampilan, dan sikap siswa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "studentId": { "type": "string", "maxLength": 64 },
+        "component": { "type": "string", "maxLength": 128 },
+        "category": { "type": "string", "enum": ["Pengetahuan (K3)", "Keterampilan (K4)", "Sikap (K1/K2)"] },
+        "score": { "type": "number" },
+        "predikat": { "type": "string", "enum": ["A", "B", "C"] },
+        "note": { "type": "string", "maxLength": 512 },
+        "semesterId": { "type": "string", "maxLength": 32 },
+        "academicYear": { "type": "string", "maxLength": 32 },
+        "teacherId": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "component", "category", "score", "predikat"]
+    },
+    "Activity": {
+      "title": "Activity",
+      "description": "Log aktivitas belajar dan pengerjaan tugas",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "studentId": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 256 },
+        "type": { "type": "string", "maxLength": 64 },
+        "xpEarned": { "type": "number" },
+        "timestamp": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "title", "xpEarned"]
+    },
+    "Point": {
+      "title": "Point",
+      "description": "Total XP dan Level siswa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "studentId": { "type": "string", "maxLength": 64 },
+        "totalXp": { "type": "number" },
+        "level": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "totalXp", "level"]
+    },
+    "Badge": {
+      "title": "Badge",
+      "description": "Daftar lencana penghargaan reward olahraga",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 128 },
+        "description": { "type": "string", "maxLength": 256 },
+        "icon": { "type": "string", "maxLength": 64 },
+        "xpValue": { "type": "number" },
+        "category": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "description", "icon", "xpValue"]
+    },
+    "StudentBadge": {
+      "title": "StudentBadge",
+      "description": "Penghargaan badge yang sudah diraih oleh siswa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "studentId": { "type": "string", "maxLength": 64 },
+        "badgeId": { "type": "string", "maxLength": 64 },
+        "unlockedAt": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "badgeId"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Pengumuman kegiatan olahraga dan pembelajaran PJOK",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 256 },
+        "sender": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 32 },
+        "content": { "type": "string", "maxLength": 2048 },
+        "isUrgent": { "type": "string", "enum": ["true", "false"] },
+        "targetRole": { "type": "string", "enum": ["ALL", "SISWA", "GURU"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "sender", "date", "content"]
+    },
+    "Reflection": {
+      "title": "Reflection",
+      "description": "Refleksi belajar PJOK yang diisi oleh siswa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "studentId": { "type": "string", "maxLength": 64 },
+        "materialId": { "type": "string", "maxLength": 64 },
+        "date": { "type": "string", "maxLength": 32 },
+        "mood": { "type": "string", "maxLength": 32 },
+        "understandingRating": { "type": "number" },
+        "textFeedback": { "type": "string", "maxLength": 1024 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "understandingRating", "textFeedback"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Konfigurasi umum aplikasi PJOK SMART BOOK",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 32 },
+        "schoolName": { "type": "string", "maxLength": 128 },
+        "appName": { "type": "string", "maxLength": 128 },
+        "creatorName": { "type": "string", "maxLength": 128 },
+        "academicYear": { "type": "string", "maxLength": 32 },
+        "activeSemester": { "type": "string", "enum": ["Semester 1", "Semester 2"] },
+        "tagline": { "type": "string", "maxLength": 256 },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "schoolName", "appName", "academicYear", "activeSemester"]
+    },
+    "TestConnection": {
+      "title": "TestConnection",
+      "description": "Dokumen uji konektivitas Firestore",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    },
+    "DigitalBook": {
+      "title": "DigitalBook",
+      "description": "Modul buku digital hasil transformasi AI dari PDF dan kurikulum PJOK",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "targetGrade": { "type": "string" },
+        "semester": { "type": "string" },
+        "chapter": { "type": "number" },
+        "topic": { "type": "string" },
+        "status": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "content": { "type": "object" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "targetGrade", "semester", "chapter", "status"]
+    },
+    "StudentBookProgress": {
+      "title": "StudentBookProgress",
+      "description": "Catatan progres belajar siswa, bookmark, dan status penyelesaian buku",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "bookId": { "type": "string" },
+        "status": { "type": "string" },
+        "isBookmarked": { "type": "boolean" },
+        "lastOpenedAt": { "type": "string" },
+        "completedAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "bookId", "status"]
+    },
+    "CompetencySubmission": {
+      "title": "CompetencySubmission",
+      "description": "Konfirmasi penyelesaian uji kompetensi CBT oleh siswa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "testId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "completedAt": { "type": "string" },
+        "status": { "type": "string" },
+        "xpEarned": { "type": "number" }
+      },
+      "required": ["id", "testId", "studentId", "status"]
+    },
+    "Assignment": {
+      "title": "Assignment",
+      "description": "Tugas PJOK siswa yang dibuat oleh guru",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "material": { "type": "string" },
+        "targetGrade": { "type": "string" },
+        "semester": { "type": "string" },
+        "deadline": { "type": "string" },
+        "attachmentUrl": { "type": "string" },
+        "points": { "type": "number" },
+        "teacherId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "description", "material", "targetGrade", "deadline"]
+    },
+    "AssignmentSubmission": {
+      "title": "AssignmentSubmission",
+      "description": "Pengumpulan tugas oleh siswa dan penilaian oleh guru",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "assignmentId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "submissionType": { "type": "string" },
+        "textContent": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "submittedAt": { "type": "string" },
+        "status": { "type": "string" },
+        "grade": { "type": "number" },
+        "feedback": { "type": "string" }
+      },
+      "required": ["id", "assignmentId", "studentId", "status", "submittedAt"]
+    }
+  },
+  "firestore": {
+    "/test/{testId}": {
+      "schema": "TestConnection",
+      "description": "Dokumen uji konektivitas Firestore"
+    },
+    "/digital_books/{bookId}": {
+      "schema": "DigitalBook",
+      "description": "Koleksi buku PJOK digital interaktif"
+    },
+    "/book_progress/{progressId}": {
+      "schema": "StudentBookProgress",
+      "description": "Koleksi progres baca, bookmark, dan penyelesaian siswa"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Koleksi akun user login"
+    },
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Koleksi profil master siswa"
+    },
+    "/teachers/{teacherId}": {
+      "schema": "Teacher",
+      "description": "Koleksi profil guru PJOK"
+    },
+    "/classes/{classId}": {
+      "schema": "Class",
+      "description": "Koleksi rombongan belajar kelas"
+    },
+    "/semesters/{semesterId}": {
+      "schema": "Semester",
+      "description": "Koleksi semester pembelajaran"
+    },
+    "/materials/{materialId}": {
+      "schema": "Material",
+      "description": "Koleksi materi pelajaran digital"
+    },
+    "/videos/{videoId}": {
+      "schema": "Video",
+      "description": "Koleksi video pembelajaran"
+    },
+    "/quizzes/{quizId}": {
+      "schema": "Quiz",
+      "description": "Koleksi kuis interaktif"
+    },
+    "/questions/{questionId}": {
+      "schema": "Question",
+      "description": "Koleksi butir soal kuis"
+    },
+    "/quiz_results/{resultId}": {
+      "schema": "QuizResult",
+      "description": "Koleksi hasil kuis siswa"
+    },
+    "/competency_tests/{testId}": {
+      "schema": "CompetencyTest",
+      "description": "Koleksi uji kompetensi CBT"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": "Attendance",
+      "description": "Koleksi catatan presensi siswa"
+    },
+    "/attitude_assessments/{assessmentId}": {
+      "schema": "AttitudeAssessment",
+      "description": "Koleksi penilaian sikap"
+    },
+    "/grades/{gradeId}": {
+      "schema": "Grade",
+      "description": "Koleksi nilai mata pelajaran"
+    },
+    "/activities/{activityId}": {
+      "schema": "Activity",
+      "description": "Koleksi riwayat aktivitas siswa"
+    },
+    "/points/{pointId}": {
+      "schema": "Point",
+      "description": "Koleksi poin XP dan level siswa"
+    },
+    "/badges/{badgeId}": {
+      "schema": "Badge",
+      "description": "Koleksi master badge penghargaan"
+    },
+    "/student_badges/{studentBadgeId}": {
+      "schema": "StudentBadge",
+      "description": "Koleksi badge yang diraih siswa"
+    },
+    "/announcements/{announcementId}": {
+      "schema": "Announcement",
+      "description": "Koleksi pengumuman sekolah"
+    },
+    "/reflections/{reflectionId}": {
+      "schema": "Reflection",
+      "description": "Koleksi catatan refleksi siswa"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "Konfigurasi aplikasi"
+    },
+    "/competency_submissions/{submissionId}": {
+      "schema": "CompetencySubmission",
+      "description": "Koleksi konfirmasi pengerjaan uji kompetensi siswa"
+    },
+    "/assignments/{assignmentId}": {
+      "schema": "Assignment",
+      "description": "Koleksi tugas PJOK siswa"
+    },
+    "/assignment_submissions/{submissionId}": {
+      "schema": "AssignmentSubmission",
+      "description": "Koleksi pengumpulan dan nilai tugas siswa"
+    }
+  }
+}

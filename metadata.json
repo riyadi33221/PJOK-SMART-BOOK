@@ -1,0 +1,6 @@
+{
+  "name": "PJOK SMART BOOK",
+  "description": "Buku Belajar Digital, Aktivitas, Asesmen & Reward - SMP Negeri 2 Kutasari oleh Purwanto, S.Pd.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

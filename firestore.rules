@@ -1,0 +1,214 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Deny-All Catch-All Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Connection test document
+    match /test/{testId} {
+      allow get: if true;
+    }
+
+    // Security Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'poerwanto2268@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN')
+      );
+    }
+
+    function isTeacher() {
+      return isSignedIn() && (
+        isAdmin() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'GURU')
+      );
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isTeacher());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
+      allow update: if isSignedIn() && (
+        isAdmin() ||
+        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'status']))
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 2. Students Master Collection
+    match /students/{studentId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // 3. Teachers Master Collection
+    match /teachers/{teacherId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // 4. Classes Collection (Public read for classes & curriculum, write for admin)
+    match /classes/{classId} {
+      allow get, list: if true;
+      allow write: if isAdmin();
+    }
+
+    // 5. Semesters Collection (Public read for active semester metadata, write for admin)
+    match /semesters/{semesterId} {
+      allow get, list: if true;
+      allow write: if isAdmin();
+    }
+
+    // 6. Materials Collection (Buku & Modul Digital - public read for student learning, write for teachers)
+    match /materials/{materialId} {
+      allow get, list: if true;
+      allow write: if isTeacher();
+    }
+
+    // 6b. Digital Books (Buku Digital Interaktif PJOK)
+    match /digital_books/{bookId} {
+      allow get, list: if true;
+      allow write: if true;
+    }
+
+    // 6c. Student Book Progress & Tracking (Progres Belajar, Bookmark, Selesai)
+    match /book_progress/{progressId} {
+      allow get, list: if true;
+      allow write: if true;
+    }
+
+    // 7. Videos Collection (Public read for learning videos, write for teachers)
+    match /videos/{videoId} {
+      allow get, list: if true;
+      allow write: if isTeacher();
+    }
+
+    // 8. Quizzes Collection (Public read for quiz topics, write for teachers)
+    match /quizzes/{quizId} {
+      allow get, list: if true;
+      allow write: if isTeacher();
+    }
+
+    // 9. Questions Collection (Public read for quiz questions, write for teachers)
+    match /questions/{questionId} {
+      allow get, list: if true;
+      allow write: if isTeacher();
+    }
+
+    // 10. Quiz Results Collection
+    match /quiz_results/{resultId} {
+      allow get: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow list: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if isTeacher();
+    }
+
+    // 11. Competency Tests Collection (Public read for test info, write for teachers)
+    match /competency_tests/{testId} {
+      allow get, list: if true;
+      allow write: if isTeacher();
+    }
+
+    // 12. Attendance Collection
+    match /attendance/{attendanceId} {
+      allow get: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow list: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow write: if isTeacher();
+    }
+
+    // 13. Attitude Assessments Collection
+    match /attitude_assessments/{assessmentId} {
+      allow get: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow list: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow write: if isTeacher();
+    }
+
+    // 14. Grades Collection
+    match /grades/{gradeId} {
+      allow get: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow list: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow write: if isTeacher();
+    }
+
+    // 15. Activities Collection
+    match /activities/{activityId} {
+      allow get: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow list: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow write: if isTeacher();
+    }
+
+    // 16. Points Collection
+    match /points/{pointId} {
+      allow get: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow list: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow write: if isTeacher();
+    }
+
+    // 17. Badges Master Collection (Public read for available awards, write for teachers)
+    match /badges/{badgeId} {
+      allow get, list: if true;
+      allow write: if isTeacher();
+    }
+
+    // 18. Student Badges Collection
+    match /student_badges/{studentBadgeId} {
+      allow get: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow list: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow write: if isTeacher();
+    }
+
+    // 19. Announcements Collection (Public read for school announcements, write for teachers)
+    match /announcements/{announcementId} {
+      allow get, list: if true;
+      allow write: if isTeacher();
+    }
+
+    // 20. Reflections Collection
+    match /reflections/{reflectionId} {
+      allow get: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow list: if isSignedIn() && (isTeacher() || resource.data.studentId == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if isTeacher();
+    }
+
+    // 21. Settings Collection (Public read for app & school config, write for admin)
+    match /settings/{settingId} {
+      allow get, list: if true;
+      allow write: if isAdmin();
+    }
+
+    // 22. Competency Submissions Collection
+    match /competency_submissions/{submissionId} {
+      allow get, list: if true;
+      allow write: if true;
+    }
+
+    // 23. Assignments Collection (Public read, write for teachers)
+    match /assignments/{assignmentId} {
+      allow get, list: if true;
+      allow write: if true;
+    }
+
+    // 24. Assignment Submissions Collection (Student submission & teacher grading)
+    match /assignment_submissions/{submissionId} {
+      allow get, list: if true;
+      allow write: if true;
+    }
+  }
+}
